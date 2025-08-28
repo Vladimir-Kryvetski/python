@@ -1,13 +1,9 @@
-from playwright.sync_api import sync_playwright, expect
+from playwright.sync_api import expect, Page
 from pages.login_page import LoginPage
 from pages.profile_page import ProfilePage
 
 
-def smoke_test():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
-        page = browser.new_page()
-
+def test_smoke(page:Page):
         # cоздаем экземпляр класса LoginPage и ProfilePage
         login_page = LoginPage(page)
         profile_page = ProfilePage(page)
@@ -22,12 +18,7 @@ def smoke_test():
         expect(profile_page.logo).to_be_visible()
         print('Успешная авторизация с валидными данными')
 
-        browser.close()
-
-def invalid_password ():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
-        page = browser.new_page()
+def test_invalid_password (page:Page):
 
         login_page = LoginPage(page)
 
@@ -40,8 +31,3 @@ def invalid_password ():
         # №3 - Проверить наличие ошибки
         expect(login_page.password_error).to_have_text('Epic sadface: Username and password do not match any user in this service')
         print('Показывается текст ошибки')
-
-        browser.close()
-
-if __name__ == '__main__':
-    smoke_test(), invalid_password()
