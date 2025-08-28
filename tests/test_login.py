@@ -17,9 +17,16 @@ class TestLogin:
         login_page.login("standard_user", "secret_sauce")
         expect(profile_page.logo).to_be_visible()
 
-    def test_invalid_password(self, login_page: LoginPage):
-        """Тест на ошибку при вводе неверного пароля."""
-        login_page.login("standard_user", "invalid_password")
 
-        error_text = 'Epic sadface: Username and password do not match any user in this service'
+    @pytest.mark.parametrize(
+            "username, password, error_text", 
+            [
+                ("standard_user", "invalid_password", "Epic sadface: Username and password do not match any user in this service"),
+                ("locked_out_user", "secret_sauce", "Epic sadface: Sorry, this user has been locked out.")
+            ]
+    )
+    def test_invalid_login_credentials(self, login_page: LoginPage, username, password, error_text):
+        """Тест на ошибку при вводе неверного пароля."""
+
+        login_page.login(username, password)
         expect(login_page.error_message).to_have_text(error_text)
